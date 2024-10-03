@@ -481,4 +481,45 @@ bool FindRule(ConstViewingRulesRcPtr vr, const std::string & name, size_t & rule
     return false;
 }
 
+void ViewingRules::copyViewingRule(const ConstViewingRulesRcPtr& src, size_t srcIdx,
+                                   size_t dstIdx, ViewingRulesRcPtr& rules)
+{
+    if (dstIdx > rules->getNumEntries())
+    {
+        std::ostringstream oss;
+        oss << "Viewing rules: destination index for copying'" << dstIdx
+            << "' is out of bounds. There are only '" << rules->getNumEntries() << "' entries.";
+        throw Exception(oss.str().c_str());
+    }
+
+    try
+    {
+        rules->insertRule(dstIdx, src->getName(srcIdx));
+
+        const int numColorSpaces = static_cast<int>(src->getNumColorSpaces(srcIdx));
+        for (int i = 0; i < numColorSpaces; i++)
+        {
+            rules->addColorSpace(dstIdx, src->getColorSpace(srcIdx, i));
+        }
+
+        const int numEncodings = static_cast<int>(src->getNumEncodings(srcIdx));
+        for (int i = 0; i < numEncodings; i++)
+        {
+            rules->addEncoding(dstIdx, src->getEncoding(srcIdx, i));
+        }
+
+        const int numCustomKeys = static_cast<int>(src->getNumCustomKeys(srcIdx));
+        for (int i = 0; i < numCustomKeys; i++)
+        {
+            rules->setCustomKey(dstIdx, src->getCustomKeyName(srcIdx, i), src->getCustomKeyValue(srcIdx, i));
+        }
+    }
+    catch (Exception& e)
+    {
+        std::ostringstream oss;
+        oss << "Error copying viewing rule from index '" << srcIdx
+            << "' to index '" << dstIdx << "': " << e.what();
+        throw Exception(oss.str().c_str());
+    }
+}
 } // namespace OCIO_NAMESPACE

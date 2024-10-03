@@ -1836,7 +1836,8 @@ public:
     virtual ~ViewingRules();
 
     ///Copy a viewing rule from a source to a destination
-    void copyViewingRule(const ConstViewingRulesRcPtr& src, size_t srcIdx, size_t dstIdx, ViewingRulesRcPtr& rules);
+    void copyViewingRule(const ConstViewingRulesRcPtr& src, size_t srcIdx,
+                         size_t dstIdx, ViewingRulesRcPtr& rules);
 
 
 private:
