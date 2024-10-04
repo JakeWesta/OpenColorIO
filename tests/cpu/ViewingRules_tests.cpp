@@ -78,6 +78,25 @@ OCIO_ADD_TEST(ViewingRules, basic)
     OCIO_CHECK_EQUAL(stringVal, cs0);
     OCIO_CHECK_NO_THROW(stringVal = vrules->getColorSpace(0, 1));
     OCIO_CHECK_EQUAL(stringVal, cs1);
+
+    // Copy rule 0 to index 2.
+    OCIO_CHECK_NO_THROW(vrules->copyViewingRule(vrules, 0, 2, vrules));
+
+    // Verify the copied rule at index 2 matches the source rule at index 0.
+    OCIO_REQUIRE_EQUAL(vrules->getNumEntries(), 4);
+    OCIO_CHECK_NO_THROW(stringVal = vrules->getName(2));
+    OCIO_CHECK_EQUAL(stringVal, ruleName0);
+    OCIO_CHECK_NO_THROW(numOf = vrules->getNumColorSpaces(2));
+    OCIO_CHECK_EQUAL(numOf, 2);
+    OCIO_CHECK_NO_THROW(stringVal = vrules->getColorSpace(2, 0));
+    OCIO_CHECK_EQUAL(stringVal, cs0);
+    OCIO_CHECK_NO_THROW(stringVal = vrules->getColorSpace(2, 1));
+    OCIO_CHECK_EQUAL(stringVal, cs1);
+
+    // Remove the copied rule.
+    OCIO_CHECK_NO_THROW(vrules->removeRule(2));
+    OCIO_REQUIRE_EQUAL(vrules->getNumEntries(), 3);
+
     // Can not access non existing colorspaces.
     OCIO_CHECK_THROW_WHAT(vrules->getColorSpace(0, 2), OCIO::Exception,
                           "rule 'Rule0' at index '0': colorspace index '2' is invalid.");
@@ -123,6 +142,24 @@ OCIO_ADD_TEST(ViewingRules, basic)
     OCIO_CHECK_EQUAL(stringVal, enc1);
     // Re-add encoding.
     OCIO_CHECK_NO_THROW(vrules->addEncoding(1, enc0.c_str()));
+
+    // Copy rule 1 to index 3.
+    OCIO_CHECK_NO_THROW(vrules->copyViewingRule(vrules, 1, 3, vrules));
+
+    // Verify the copied rule at index 3 matches the source rule at index 1.
+    OCIO_REQUIRE_EQUAL(vrules->getNumEntries(), 4);
+    OCIO_CHECK_NO_THROW(stringVal = vrules->getName(3));
+    OCIO_CHECK_EQUAL(stringVal, ruleName1);
+    OCIO_CHECK_NO_THROW(numOf = vrules->getNumEncodings(3));
+    OCIO_CHECK_EQUAL(numOf, 2);
+    OCIO_CHECK_NO_THROW(stringVal = vrules->getEncoding(3, 0));
+    OCIO_CHECK_EQUAL(stringVal, enc0);
+    OCIO_CHECK_NO_THROW(stringVal = vrules->getEncoding(3, 1));
+    OCIO_CHECK_EQUAL(stringVal, enc1);
+
+    // Remove the copied rule.
+    OCIO_CHECK_NO_THROW(vrules->removeRule(3));
+    OCIO_REQUIRE_EQUAL(vrules->getNumEntries(), 3);
 
     // Same with custom keys.
     const std::string key0{ "key0" };
